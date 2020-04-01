@@ -1,0 +1,427 @@
+<html><head>
+        <script type="text/javascript">
+            function done(){
+            //make visible the rest of the app
+            document.getElementById("staff").setAttribute("readonly","");
+            document.getElementById("roster").style.visibility = "visible"; 
+            document.getElementById("rosterTable").style.visibility = "visible";
+
+            //add staff name drop downs
+            var str = document.getElementById("staff").value;
+            var names = str.split("\n");	
+            var selectTemplate = "<select class='call' onchange='tally()'><option value='99'></option>"
+            for(var a=0; a < names.length; a++){
+            selectTemplate += "<option value='"+ a + "'>"+ names[a] +"</option>";
+            }
+            selectTemplate += "</select>";
+
+            var list = document.getElementsByClassName("tg-2");
+            for(var i=0; i < list.length;i++){
+            list[i].innerHTML = selectTemplate;
+            }
+
+            //add date column to side
+            var date = new Date(document.getElementById("year").value, document.getElementById("month").value -1, 1, 0, 0, 0, 0);
+            var firstDay = date.getDay();
+
+            var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            var monthEnds = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+            if (date.getFullYear()%4 == 0){monthEnds[1] = 29;}
+            var monthlength = monthEnds[date.getMonth()];
+            monthlength++;
+
+            var tableRows = document.getElementById("rosterTable").getElementsByTagName("tr");
+            var dayCells = document.getElementsByClassName("tg-1");
+            for(var z=1; z<monthlength; z++){
+            firstDay %= 7;
+            dayCells[z-1].innerHTML = z + " " + days[firstDay];
+            //highlight weekends
+            if(firstDay == 0 || firstDay == 6){tableRows[z].style.background = "#D0D4DA";}
+            firstDay++;
+            }
+
+            //set title for roster
+            var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById("roster").innerHTML = "Roster for " + months[date.getMonth()] + " " + date.getFullYear();
+            }
+
+            function reset(){
+            var r = confirm("Sure to reset?");
+            if (r == true) {
+            location.reload();
+            }
+            }
+
+            function tally(){
+
+            //init variables
+            var callTally = [];
+            var sessionTally =[];
+
+            // call types 0:16-00, 1:00-08, 2:08-16, 3:08-00, 4:24hr
+            var sessionNormals =[1,1,1,1,2];
+            var sessionWeekends = [1,1,1,2,3];
+
+            //get amount of people
+            var str = document.getElementById("staff").value;
+            var names = str.split("\n");
+            for(var i=0; i<names.length; i++){
+            callTally[i] = 0; sessionTally[i] = 0;
+            }
+
+            //determine how columns are allocated
+            var table = document.getElementsByClassName("call");
+            var days = document.getElementsByClassName("tg-1");
+            var isWeekend = false;
+
+            //iterate thru table,something here broke
+            for(var j=0; j<31;j++){
+            //is it weekend
+            if(days[j].innerHTML.includes("Sat") || days[j].innerHTML.includes("Sun")){isWeekend = true;}
+            else{isWeekend =false;}
+
+            //go through session columns
+            for(var k=0; k<5; k++){
+            var person = table[(j*5)+k].value;
+            callTally[person]++;
+            if(isWeekend){sessionTally[person] += sessionWeekends[k];}
+            else{sessionTally[person] += sessionNormals[k];}
+            }
+            }
+
+            //display info, this section good
+            var output = "";
+            for(var l =0; l<names.length;l++){
+            output += callTally[l] + " calls, " + sessionTally[l] + " sessions\n";
+            }
+
+            document.getElementById("staff-details").value = output;
+            }
+			
+			function printRoster(){
+				document.getElementById("hideable").style.display = "none";
+				document.getElementById("hideable2").style.display = "none";
+				document.body.style.background = "#fff";
+				window.print();
+				document.getElementById("hideable").style.display = "block";
+				document.getElementById("hideable2").style.display = "block";
+				document.body.style.background = "#FFF8F2";
+			}
+        </script> 
+
+    </head><body><style type="text/css">
+            #Roster{visibility:hidden;}
+            .tg  {border-collapse:collapse;border-spacing:0px;visibility:hidden;}
+            .tg td{font-family:Arial, sans-serif;font-size:14px;border: solid 1px black;overflow:hidden;word-break:normal;text-align:left;vertical-align:top}
+            .tg th{background:#D4EEFF; font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:5px;border:solid 1px black;border-spacing:1px;overflow:hidden;word-break:normal;}
+            .tg-1, .tg-0{width:50px; padding:5px;}
+            .tg-2, .tg-3{width:120px;padding:2px}
+            select{width:100%; height:100%;}
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+            input[type=number] {
+                -moz-appearance: textfield;
+            }
+            .mybutton{width:120px; padding:5px; display:inline-block; background:#7FA98C; border-radius:3px;  cursor: pointer; text-align:center; color:white;}
+			.mybutton:hover{background:#3A784D; color:white;}
+
+            #rosterTable th{position:sticky; position: -webkit-sticky; top: 0; background:white; box-shadow: inset 0 -1px 0 #000000, inset  -1px 0 #000000;}
+			.people-d textarea {overflow-x:scroll; resize: none; white-space:pre;}
+			h1, h3 p { margin:5px;}
+			#container{text-align:center};
+			table {margin: auto;}
+			#fancy{ width:720px; background:#E5C6AC; border-radius:5px; display:inline-block;}
+			body {background:#FFF8F2;}
+        </style>
+		
+		<div id="container">
+		<div id="hideable">
+		<h1>A.F.R.I.C.A.</h1>
+		<p style="margin:5px;">(<b>A</b>pp <b>F</b>or <b>R</b>ostering <b>I</b>ntern <b>CA</b>lls)
+		<hr style="width:400px;"/>
+		<br/>
+        <form>
+			<label><b>Date: </b></label>
+            <input type="number" id="month" name="month" placeholder="Month">
+            <input type="number" id="year" name="year" placeholder="Year">
+        </form>
+		</div>
+        <table class="people" style="margin: auto;">
+            <tbody><tr>
+                    <th class="people-h">Staff</th>
+                    <th class="people-h">Details</th>
+                </tr>
+                <tr>
+                    <td class="people-d"><textarea id="staff" rows="20" cols="16" placeholder="List of staff"></textarea></td>
+                    <td class="people-d"><textarea id="staff-details" rows="20" cols="30" readonly placeholder="Details will appear later"></textarea></td>
+                </tr>
+            </tbody></table>
+
+		<P style="page-break-before: always">
+		<div id="hideable2">
+        <div class="mybutton" onclick="done()">Next stage</div>&nbsp;<div class="mybutton" onclick="reset()">Reset app</div>&nbsp;<div class="mybutton" onclick="printRoster()">Print roster</div>
+        <br><br><br>
+		</div>
+        <h3 id="roster">Roster</h3>
+        <table class="tg" id="rosterTable" style="margin: auto; background:#fff;">
+            <tbody><tr>
+                    <th class="tg-0"></th>
+                    <th class="tg-3">4pm-12am</th>
+                    <th class="tg-3">12am-8am</th>
+                    <th class="tg-3">8am-4am</th>
+                    <th class="tg-3">8am-12am</th>
+                    <th class="tg-3">24hr</th>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+                <tr>
+                    <td class="tg-1"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                    <td class="tg-2"></td>
+                </tr>
+            </tbody></table></div></body></html>
