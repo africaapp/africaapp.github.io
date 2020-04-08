@@ -1,5 +1,9 @@
 <html><head>
         <script type="text/javascript">
+			window.onbeforeunload = function () {
+				return "Are you sure that you want to leave this page?";
+			}
+		
             function done(){
             //make visible the rest of the app
             document.getElementById("staff").setAttribute("readonly","");
@@ -37,8 +41,12 @@
             dayCells[z-1].innerHTML = z + " " + days[firstDay];
             //highlight weekends
             if(firstDay == 0 || firstDay == 6){tableRows[z].style.background = "#D0D4DA";}
+			else{
+				tableRows[z].style.background = "#FFF";
+			}
             firstDay++;
             }
+			
 
             //set title for roster
             var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -101,10 +109,12 @@
 			function printRoster(){
 				document.getElementById("hideable").style.display = "none";
 				document.getElementById("hideable2").style.display = "none";
+				document.getElementById("hideable3").style.display = "none";
 				document.body.style.background = "#fff";
 				window.print();
 				document.getElementById("hideable").style.display = "block";
 				document.getElementById("hideable2").style.display = "block";
+				document.getElementById("hideable3").style.display = "block";
 				document.body.style.background = "#FFF8F2";
 			}
         </script> 
@@ -146,8 +156,8 @@
 		<br/>
         <form>
 			<label><b>Date: </b></label>
-            <input type="number" id="month" name="month" placeholder="Month">
-            <input type="number" id="year" name="year" placeholder="Year">
+            <input type="number" id="month" name="month" placeholder="1: Month Number">
+            <input type="number" id="year" name="year" placeholder="2: Year">
         </form>
 		</div>
         <table class="people" style="margin: auto;">
@@ -156,8 +166,8 @@
                     <th class="people-h">Details</th>
                 </tr>
                 <tr>
-                    <td class="people-d"><textarea id="staff" rows="20" cols="16" placeholder="List of staff"></textarea></td>
-                    <td class="people-d"><textarea id="staff-details" rows="20" cols="30" readonly placeholder="Details will appear later"></textarea></td>
+                    <td class="people-d"><textarea id="staff" rows="20" cols="16" placeholder="3: List of staff goes here separated by new line"></textarea></td>
+                    <td class="people-d"><textarea id="staff-details" rows="20" cols="30" readonly placeholder="4: Details will appear later. Press next after completing step 3 to roster interns. When finished rostering them press print  roster."></textarea></td>
                 </tr>
             </tbody></table>
 
@@ -424,4 +434,6 @@
                     <td class="tg-2"></td>
                     <td class="tg-2"></td>
                 </tr>
-            </tbody></table></div></body></html>
+            </tbody></table>
+			<p id="hideable3">No data is stored or kept by this app. If you close the page you lose all your work. So yeah, your privacy is safe.</p>
+			</div></body></html>
