@@ -61,7 +61,8 @@
             }
 
             function tally(){
-
+			highlight();
+			
             //init variables
             var callTally = [];
             var sessionTally =[];
@@ -111,11 +112,28 @@
 				document.getElementById("hideable2").style.display = "none";
 				document.getElementById("hideable3").style.display = "none";
 				document.body.style.background = "#fff";
+				unhighlight();
 				window.print();
+				highlight();
 				document.getElementById("hideable").style.display = "block";
 				document.getElementById("hideable2").style.display = "block";
 				document.getElementById("hideable3").style.display = "block";
 				document.body.style.background = "#FFF8F2";
+			}
+			
+			function highlight(){
+				var table2 = document.getElementsByClassName("call");
+				for(var z=0; z<table2.length; z++){
+					table2[z].setAttribute("class", "call opt" + table2[z].value);
+				}
+				
+			}
+			
+			function unhighlight(){
+				var table2 = document.getElementsByClassName("call");
+				for(var z=0; z<table2.length; z++){
+					table2[z].setAttribute("class", "call");
+				}
 			}
         </script> 
 
@@ -146,6 +164,27 @@
 			table {margin: auto;}
 			#fancy{ width:720px; background:#E5C6AC; border-radius:5px; display:inline-block;}
 			body {background:#FFF8F2;}
+			.opt99{}
+			.opt0{background-color:#CFA3CA;}
+			.opt1{background-color:#7DE09B;}
+			.opt2{background-color:#EFAFCF;}
+			.opt3{background-color:#FFE286;}
+			.opt4{background-color:#E1EA9A;}
+			.opt5{background-color:#FCC7AA;}
+			.opt6{background-color:#EBFFE2;}
+			.opt7{background-color:#BFFFF5;}
+			.opt8{background-color:#EAB5B2;}
+			.opt9{background-color:#D4ED31;}
+			.opt10{background-color:#FFA3CA;}
+			.opt11{background-color:#ADDAB8;}
+			.opt12{background-color:#9CDAD7;}
+			.opt13{background-color:#95CDF0;}
+			.opt14{background-color:#D8A2A2;}
+			.opt15{background-color:#CDBEE2;}
+			.opt16{background-color:#D8D8D8;}
+			.opt17{background-color:#AFAFAF;}
+			.opt18{background-color:#BCD5E0;}
+			.opt19{background-color:#FCE8FF;}
         </style>
 		
 		<div id="container">
@@ -435,5 +474,29 @@
                     <td class="tg-2"></td>
                 </tr>
             </tbody></table>
-			<p id="hideable3">No data is stored or kept by this app. If you close the page you lose all your work. So yeah, your privacy is safe.</p>
+			<p id="hideable3">No data is stored or kept by this app. If you close the page you lose all your work. Your privacy is safe.</p>
+			<script type="text/javascript" language="javascript">
+<!--
+// Email obfuscator script 2.1 by Tim Williams, University of Arizona
+// Random encryption key feature coded by Andrew Moulden
+// This code is freeware provided these four comment lines remain intact
+// A wizard to generate this code is at http://www.jottings.com/obfuscator/
+{ coded = "HMcZ2HHqq@RKTtRRm.2Rx"
+  key = "vJ6fN3OXxTDAPr8WpGHez4biM9nYklyjuBcoSqhLdEFgZU7IVmtwQK02Rs1a5C"
+  shift=coded.length
+  link=""
+  for (i=0; i<coded.length; i++) {
+    if (key.indexOf(coded.charAt(i))==-1) {
+      ltr = coded.charAt(i)
+      link += (ltr)
+    }
+    else {     
+      ltr = (key.indexOf(coded.charAt(i))-shift+key.length) % key.length
+      link += (key.charAt(ltr))
+    }
+  }
+document.write("<a href='mailto:"+link+"' target='_blank'>Email the developer</a>")
+}
+//-->
+</script><noscript>Sorry, you need Javascript on to email me.</noscript>
 			</div></body></html>
